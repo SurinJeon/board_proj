@@ -1,0 +1,41 @@
+@charset "UTF-8";
+
+#container{
+	text-align: center;
+	width: 800px;
+	margin: 20px auto;
+}
+
+table.table {
+  border-collapse: collapse;
+  text-align: left;
+  line-height: 1.5;
+
+}
+table.table thead th {
+  padding: 10px;
+  font-weight: bold;
+  vertical-align: top;
+  color: SaddleBrown;
+  border-bottom: 3px solid Tan;
+  text-align: center;
+}
+
+span{
+	color: DarkRed;
+}
+table.table td {
+  width: 300px;
+  padding: 10px;
+  vertical-align: top;
+  border-bottom: 1px solid #ccc;
+  text-align: center;
+}
+
+#list{
+	height: 600px;
+}
+
+p{
+	text-align: right;
+}

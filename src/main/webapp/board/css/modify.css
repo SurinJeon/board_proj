@@ -1,0 +1,13 @@
+@charset "UTF-8";
+
+#container{
+	width: 500px;
+	margin: 20px;
+}
+#writeForm{
+	border: 1px solid tan;
+}
+
+#td_left label{
+	text-align: right;
+}

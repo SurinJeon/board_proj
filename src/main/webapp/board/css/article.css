@@ -1,0 +1,13 @@
+@charset "UTF-8";
+
+#contianer{
+	width: 500px;
+	text-align: center;
+}
+#basicInfoArea{
+	border: 1px solid Tan;
+	margin: 20px auto;
+}
+
+
+
