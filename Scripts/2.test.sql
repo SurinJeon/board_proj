@@ -34,5 +34,15 @@ delete from board where board_num = 23;
 select 1 from board where BOARD_NUM = 23 and BOARD_PASS = '1111'; -- 정확히 두개 다 일치하면 1이 나오고, 하나라도 다르면 null 값이 넘어옴
 
 -- 글 수정
-select * from board;
+select BOARD_NUM, BOARD_NAME, BOARD_PASS, BOARD_SUBJECT, BOARD_CONTENT, BOARD_FILE, BOARD_RE_REF, BOARD_RE_LEV, BOARD_RE_SEQ, BOARD_READCOUNT, BOARD_DATE from board;
 update board set BOARD_SUBJECT = '짱짱짱수린', BOARD_CONTENT = '짱짱이다...' where BOARD_NUM = 20;
+
+-- 21번 글에 대한 답변
+update board set BOARD_RE_SEQ = BOARD_RE_SEQ + 1 where BOARD_RE_REF = 21 and BOARD_RE_SEQ > 0;
+insert into board(BOARD_NUM, BOARD_NAME, BOARD_PASS, BOARD_SUBJECT, BOARD_CONTENT, BOARD_FILE, BOARD_RE_REF, BOARD_RE_LEV, BOARD_RE_SEQ) values(21, '짱수린2', '1111', '위장아파,,,', '피곤허다', '', 21, 1, 1);
+
+
+select * from board where BOARD_RE_REF = 19; -- 답변글일때는 board_num 이 아니라 board_re_ref로 검색 들어가야됨
+
+select * from board;
+

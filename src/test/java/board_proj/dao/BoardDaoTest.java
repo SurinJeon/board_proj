@@ -91,8 +91,19 @@ public class BoardDaoTest {
 	}
 
 	@Test
-	public void testInsertReplyArticle() {
-		fail("Not yet implemented");
+	public void test10InsertReplyArticle() {
+		System.out.println("testReplyArticle()");
+		BoardDto replyArticle = new BoardDto(
+				"짱수린ㅎㅎ", 
+				"1111", 
+				"답글의 답글!", 
+				"lev seq확인plz", 
+				"");
+		replyArticle.setBoard_re_ref(19); // 19글에 계속 답글 넣을 것
+		
+		int res = dao.insertReplyArticle(replyArticle);
+		Assert.assertEquals(1, res);
+		System.out.println(replyArticle);
 	}
 
 	@Test

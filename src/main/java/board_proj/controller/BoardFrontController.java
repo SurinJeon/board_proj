@@ -9,12 +9,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import board_proj.action.Action;
+import board_proj.action.BoardDeleteFormAction;
 import board_proj.action.BoardDeleteProAction;
 import board_proj.action.BoardDetailAction;
 import board_proj.action.BoardListAction;
 import board_proj.action.BoardModifyFormAction;
 import board_proj.action.BoardModifyProAction;
 import board_proj.action.BoardReplyFormAction;
+import board_proj.action.BoardReplyProAction;
+import board_proj.action.BoardWriteFormAction;
 import board_proj.action.BoardWriteProAction;
 import board_proj.action.FileDownloadAction;
 import board_proj.dto.ActionForward;
@@ -44,8 +47,12 @@ public class BoardFrontController extends HttpServlet {
 		Action action = null;
 		
 		if(command.equals("/boardWriteForm.do")) {
-			forward = new ActionForward();
-			forward.setPath("/board/qna_board_write.jsp"); // forwarding
+			action = new BoardWriteFormAction();
+			try {
+				forward = action.execute(request, response);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}else if(command.equals("/boardWritePro.do")) {
 //			BOARD_NAME=aaa&BOARD_PASS=aaa&BOARD_SUBJECT=aaa&BOARD_CONTENT=aaa&BOARD_CONTENT=apple.jpg
 			action = new BoardWriteProAction();
@@ -77,16 +84,12 @@ public class BoardFrontController extends HttpServlet {
 				e.printStackTrace();
 			}
 		} else if (command.equals("/boardDeleteForm.do")) {
-			// Action 넘기지 않고 여기서 바로 처리함
-			String nowPage = request.getParameter("page");
-			int board_num = Integer.parseInt(request.getParameter("board_num"));
-			
-			System.out.println(nowPage + ", " + board_num);
-			request.setAttribute("page", nowPage);
-			request.setAttribute("board_num", board_num);
-			
-			forward = new ActionForward();
-			forward.setPath("/board/qna_board_delete.jsp");
+			action = new BoardDeleteFormAction();
+			try {
+				forward = action.execute(request, response);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		} else if(command.equals("/boardDeletePro.do")) {
 			// http://localhost:8080/board_proj/boardDeletePro.do?board_num=23
 			action = new BoardDeleteProAction();
@@ -112,6 +115,20 @@ public class BoardFrontController extends HttpServlet {
 			}
 		} else if(command.equals("/boardModifyPro.do")) {
 			action = new BoardModifyProAction();
+			try {
+				forward = action.execute(request, response);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		} else if(command.equals("/boardReplyForm.do")) {
+			action = new BoardReplyFormAction();
+			try {
+				forward = action.execute(request, response);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		} else if(command.equals("/boardReplyPro.do")) {
+			action = new BoardReplyProAction();
 			try {
 				forward = action.execute(request, response);
 			} catch (Exception e) {

@@ -39,3 +39,7 @@ table.table td {
 p{
 	text-align: right;
 }
+
+table #subject{
+	text-align: left;
+}
