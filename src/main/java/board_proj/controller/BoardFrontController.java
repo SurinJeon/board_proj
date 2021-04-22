@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import board_proj.action.Action;
+import board_proj.action.NullAction;
 import board_proj.dto.ActionForward;
 
 @WebServlet(urlPatterns = {"*.do"},
@@ -37,21 +38,30 @@ public class BoardFrontController extends HttpServlet {
 	public void init(ServletConfig config) throws ServletException {
 		System.out.println("init() >> config " + config.getInitParameter("configFile")); // debugging sysout
 		String configFile = config.getInitParameter("configFile");
-		try(InputStream is = config.getServletContext().getResourceAsStream(configFile)){
+		try (InputStream is = config.getServletContext().getResourceAsStream(configFile)) {
 			Properties props = new Properties();
 			props.load(is);
 //			System.out.println(props); // debugging sysout
-			for(Entry<Object, Object> entry : props.entrySet()) {
+			Class<?> cls;
+			Action action = null;
+			for (Entry<Object, Object> entry : props.entrySet()) {
 //				System.out.println("name >> " + entry.getKey() + ", " + "value >> " + entry.getValue()); // debugging sysout
-				Class<?> cls = Class.forName((String)entry.getValue()); // JVM에서 class 이름을 통해 class를 로드함
-				Action action = (Action) cls.newInstance(); // 찾아낸 클래스를 인스턴스화 해서 Action으로 타입 변환
+				try {
+					cls = Class.forName((String) entry.getValue()); // JVM에서 class 이름을 통해 class를 로드함
+					action = (Action) cls.newInstance(); // 찾아낸 클래스를 인스턴스화 해서 Action으로 타입 변환
+				} catch (ClassNotFoundException e) {
+					action = new NullAction();
+					// class name을 찾지 못해서 로드하지 못하는 경우 action이 null이 되므로 새로운 nullAction만들어서 이걸로 지정해주기
+					e.printStackTrace();
+				}
+
 				actionMap.put((String)entry.getKey(), action);
 			}
 			
 //			for(Entry<String, Action> entry : actionMap.entrySet()) { debugging
 //				System.out.println("name >> " + entry.getKey() + ", " + "value >> " + entry.getValue());
 //			}
-		} catch (IOException | ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+		} catch (IOException | InstantiationException | IllegalAccessException e) {
 			e.printStackTrace();
 		}
 		
@@ -85,7 +95,6 @@ public class BoardFrontController extends HttpServlet {
 			
 			Action action = actionMap.get(command); // >> 이거 처리하면서 객체 생성까지 위에서 끝냄
 			ActionForward forward = action.execute(request, response);
-			// 위 두 줄로 끝냄
 			
 			/*
 			if (command.equals("/boardWriteForm.do")) {
