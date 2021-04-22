@@ -8,7 +8,7 @@ import board_proj.dto.ActionForward;
 public class BoardWriteFormAction implements Action {
 
 	@Override
-	public ActionForward execute(HttpServletRequest request, HttpServletResponse response) throws Exception {
+	public ActionForward execute(HttpServletRequest request, HttpServletResponse response){
 		response.setContentType("text/html; charset = UTF-8");
 		ActionForward forward = new ActionForward();
 		forward.setPath("/board/qna_board_write.jsp"); // forwarding

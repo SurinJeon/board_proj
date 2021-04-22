@@ -13,7 +13,7 @@ import board_proj.service.BoardModifyProService;
 public class BoardModifyProAction implements Action {
 
 	@Override
-	public ActionForward execute(HttpServletRequest request, HttpServletResponse response) throws Exception {
+	public ActionForward execute(HttpServletRequest request, HttpServletResponse response){
 		
 		ActionForward forward = null;
 		response.setContentType("text/html; charset = UTF-8");
@@ -59,14 +59,18 @@ public class BoardModifyProAction implements Action {
 		
 		return forward;
 	}
-	
-	private void sendMessage(HttpServletResponse response, String msg) throws IOException {
-		PrintWriter out = response.getWriter();
-		out.println("<script>");
-		out.println("alert('" + msg + "');");
-		out.println("history.back();");
-		out.println("</script>");
-		out.close();
+
+	private void sendMessage(HttpServletResponse response, String msg){
+		try {
+			PrintWriter out = response.getWriter();
+			out.println("<script>");
+			out.println("alert('" + msg + "');");
+			out.println("history.back();");
+			out.println("</script>");
+			out.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 }

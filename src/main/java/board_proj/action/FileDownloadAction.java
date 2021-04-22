@@ -1,6 +1,7 @@
 package board_proj.action;
 
 import java.io.FileInputStream;
+import java.io.IOException;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletOutputStream;
@@ -12,41 +13,47 @@ import board_proj.dto.ActionForward;
 public class FileDownloadAction implements Action {
 
 	@Override
-	public ActionForward execute(HttpServletRequest request, HttpServletResponse response) throws Exception {
+	public ActionForward execute(HttpServletRequest request, HttpServletResponse response) {
 		response.setContentType("text/html; charset = UTF-8");
 		// fileDown.do?downFile=home.png
 		ActionForward forward = null;
 		String fileName = request.getParameter("downFile");
 		System.out.println("fileName >> " + fileName);
-		
+
 		String savePath = "/boardUpload";
 		ServletContext context = request.getServletContext();
 		String sDownloadPath = context.getRealPath(savePath);
 		String sFilePath = sDownloadPath + "\\" + fileName;
-		
+
 		byte b[] = new byte[4096];
-		FileInputStream in = new FileInputStream(sFilePath);
-		String sMimeType = request.getServletContext().getMimeType(sFilePath);
-		System.out.println("sMimeType >> " + sMimeType);
-		
-		if(sMimeType == null) {
-			sMimeType = "application/octet-stream";
+		FileInputStream in;
+		try {
+			in = new FileInputStream(sFilePath);
+
+			String sMimeType = request.getServletContext().getMimeType(sFilePath);
+			System.out.println("sMimeType >> " + sMimeType);
+
+			if (sMimeType == null) {
+				sMimeType = "application/octet-stream";
+			}
+
+			response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
+
+			ServletOutputStream out = response.getOutputStream();
+			int numRead;
+
+			while ((numRead = in.read(b, 0, b.length)) != -1) {
+				out.write(b, 0, numRead);
+			}
+
+			out.flush();
+			out.close();
+			in.close();
+			
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
-		
-		response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
-		
-		ServletOutputStream out = response.getOutputStream();
-		int numRead;
-		
-		while((numRead = in.read(b, 0, b.length)) != -1) {
-			out.write(b, 0, numRead);
-		}
-		
-		out.flush();
-		out.close();
-		in.close();
-		
-		
+
 		return forward;
 	}
 

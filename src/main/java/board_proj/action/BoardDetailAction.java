@@ -10,7 +10,7 @@ import board_proj.service.BoardDetailService;
 public class BoardDetailAction implements Action {
 
 	@Override
-	public ActionForward execute(HttpServletRequest request, HttpServletResponse response) throws Exception {
+	public ActionForward execute(HttpServletRequest request, HttpServletResponse response){
 		// http://localhost:8080/board_proj/boardDetail.do?board_num=23&page=1
 		response.setContentType("text/html; charset = UTF-8");
 		int board_num = Integer.parseInt(request.getParameter("board_num"));

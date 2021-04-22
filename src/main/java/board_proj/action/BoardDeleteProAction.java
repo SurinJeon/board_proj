@@ -12,7 +12,7 @@ import board_proj.service.BoardDeleteService;
 public class BoardDeleteProAction implements Action {
 
 	@Override
-	public ActionForward execute(HttpServletRequest request, HttpServletResponse response) throws Exception {
+	public ActionForward execute(HttpServletRequest request, HttpServletResponse response) {
 		// boardDeletePro.do?board_num = 22
 		// hiddenpage = 1
 		// BOARD_PASS = 1111
@@ -22,7 +22,7 @@ public class BoardDeleteProAction implements Action {
 		String pass = request.getParameter("BOARD_PASS");
 		BoardDeleteService service = new BoardDeleteService();
 		ActionForward forward = null;
-		
+
 		boolean isArticleWriter = service.isArticleWriter(board_num, pass); // 작성자 일치여부 확인
 
 		if (!isArticleWriter) { // 작성자가 아니므로 삭제 실패임
@@ -36,7 +36,7 @@ public class BoardDeleteProAction implements Action {
 			sendMessage(response, "삭제실패");
 			return forward;
 		}
-		
+
 		// 책이랑 코드 다름 (중간중간 return해서 다 통과해오면 밑의 문장 수행하게끔)
 		forward = new ActionForward();
 		forward.setRedirect(true);
@@ -45,13 +45,17 @@ public class BoardDeleteProAction implements Action {
 
 	}
 
-	private void sendMessage(HttpServletResponse response, String msg) throws IOException {
-		PrintWriter out = response.getWriter();
-		out.println("<script>");
-		out.println("alert('" + msg + "');");
-		out.println("history.back();");
-		out.println("</script>");
-		out.close();
+	private void sendMessage(HttpServletResponse response, String msg) {
+		try {
+			PrintWriter out = response.getWriter();
+			out.println("<script>");
+			out.println("alert('" + msg + "');");
+			out.println("history.back();");
+			out.println("</script>");
+			out.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 }

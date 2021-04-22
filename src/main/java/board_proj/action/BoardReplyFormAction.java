@@ -10,7 +10,7 @@ import board_proj.service.BoardReplyService;
 public class BoardReplyFormAction implements Action {
 
 	@Override
-	public ActionForward execute(HttpServletRequest request, HttpServletResponse response) throws Exception {
+	public ActionForward execute(HttpServletRequest request, HttpServletResponse response){
 		response.setContentType("text/html; charset = UTF-8");
 		
 		ActionForward forward = new ActionForward();

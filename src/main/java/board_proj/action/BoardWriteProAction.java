@@ -1,5 +1,6 @@
 package board_proj.action;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 
 import javax.servlet.ServletContext;
@@ -16,7 +17,7 @@ import board_proj.service.BoardWriteService;
 public class BoardWriteProAction implements Action {
 
 	@Override
-	public ActionForward execute(HttpServletRequest request, HttpServletResponse response) throws Exception {
+	public ActionForward execute(HttpServletRequest request, HttpServletResponse response){
 		response.setContentType("text/html; charset = UTF-8");
 		String realFolder = "";
 		String saveFolder = "/boardUpload";
@@ -27,12 +28,17 @@ public class BoardWriteProAction implements Action {
 		
 		
 		
-		MultipartRequest multi = new MultipartRequest(
-				request, 
-				realFolder, 
-				fileSize, 
-				"utf-8", 
-				new DefaultFileRenamePolicy());
+		MultipartRequest multi = null;
+		try {
+			multi = new MultipartRequest(
+					request, 
+					realFolder, 
+					fileSize, 
+					"utf-8", 
+					new DefaultFileRenamePolicy());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		BoardDto boardDto = new BoardDto();
 		boardDto.setBoard_name(multi.getParameter("BOARD_NAME"));
 		boardDto.setBoard_pass(multi.getParameter("BOARD_PASS"));
@@ -53,14 +59,22 @@ public class BoardWriteProAction implements Action {
 			forward.setRedirect(true);
 			forward.setPath("boardList.do");
 		} else {
+			sendMessage(response);
+		}
+
+		return forward;
+	}
+
+	private void sendMessage(HttpServletResponse response) {
+		try {
 			PrintWriter out = response.getWriter();
 			out.println("<script>");
 			out.println("alert('등록실패')");
 			out.println("history.back()");
 			out.println("</script>");
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
-		
-		return forward;
 	}
 
 }
