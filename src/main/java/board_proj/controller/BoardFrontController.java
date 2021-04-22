@@ -1,30 +1,61 @@
 package board_proj.controller;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Properties;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebInitParam;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import board_proj.action.Action;
-import board_proj.action.BoardDeleteFormAction;
-import board_proj.action.BoardDeleteProAction;
-import board_proj.action.BoardDetailAction;
-import board_proj.action.BoardListAction;
-import board_proj.action.BoardModifyFormAction;
-import board_proj.action.BoardModifyProAction;
-import board_proj.action.BoardReplyFormAction;
-import board_proj.action.BoardReplyProAction;
-import board_proj.action.BoardWriteFormAction;
-import board_proj.action.BoardWriteProAction;
-import board_proj.action.FileDownloadAction;
 import board_proj.dto.ActionForward;
 
-@WebServlet("*.do") // 작업 지시만 하는 command servlet이라 생각해야됨
+@WebServlet(urlPatterns = {"*.do"},
+			loadOnStartup = 1,
+			initParams = {
+					@WebInitParam(
+							name="configFile", 
+							value="/WEB-INF/commandAction.properties"
+							)}
+		) // 작업 지시만 하는 command servlet이라 생각해야됨
 public class BoardFrontController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	private Map<String, Action> actionMap = new HashMap<String, Action>();
+ 
+	
+	// doGet doPost이전에 init 먼저 수행됨
+	// config는 위 annotation에서 지정한 것이 넘어옴
+	@Override
+	public void init(ServletConfig config) throws ServletException {
+		System.out.println("init() >> config " + config.getInitParameter("configFile")); // debugging sysout
+		String configFile = config.getInitParameter("configFile");
+		try(InputStream is = config.getServletContext().getResourceAsStream(configFile)){
+			Properties props = new Properties();
+			props.load(is);
+//			System.out.println(props); // debugging sysout
+			for(Entry<Object, Object> entry : props.entrySet()) {
+//				System.out.println("name >> " + entry.getKey() + ", " + "value >> " + entry.getValue()); // debugging sysout
+				Class<?> cls = Class.forName((String)entry.getValue()); // JVM에서 class 이름을 통해 class를 로드함
+				Action action = (Action) cls.newInstance(); // 찾아낸 클래스를 인스턴스화 해서 Action으로 타입 변환
+				actionMap.put((String)entry.getKey(), action);
+			}
+			
+//			for(Entry<String, Action> entry : actionMap.entrySet()) { debugging
+//				System.out.println("name >> " + entry.getKey() + ", " + "value >> " + entry.getValue());
+//			}
+		} catch (IOException | ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+			e.printStackTrace();
+		}
+		
+	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
@@ -44,13 +75,19 @@ public class BoardFrontController extends HttpServlet {
 		 * " -> " + "contextPath >> " + contextPath); // 확인용 출력문
 		 */
 
-		try {
-			String command = request.getServletPath();
+	/*	try { */
+			String command = request.getServletPath(); 
+			System.out.println("command >> " + command);
 
 			// 아래 두 개는 내가 만든 class와 interface
-			ActionForward forward = null; // 다형성을 이용 (같은 명령으로 다른 결과 접근할 수 있음)
-			Action action = null;
-
+//			ActionForward forward = null; // 다형성을 이용 (같은 명령으로 다른 결과 접근할 수 있음)
+//			Action action = null;
+			
+			Action action = actionMap.get(command); // >> 이거 처리하면서 객체 생성까지 위에서 끝냄
+			ActionForward forward = action.execute(request, response);
+			// 위 두 줄로 끝냄
+			
+			/*
 			if (command.equals("/boardWriteForm.do")) {
 				action = new BoardWriteFormAction();
 				try {
@@ -140,7 +177,7 @@ public class BoardFrontController extends HttpServlet {
 					e.printStackTrace();
 				}
 			}
-
+			*/
 			if (forward != null) {
 				if (forward.isRedirect()) {
 					response.sendRedirect(forward.getPath());
@@ -149,9 +186,9 @@ public class BoardFrontController extends HttpServlet {
 				}
 			}
 
-		} catch (Exception e) {
+	/*	} catch (Exception e) {
 			e.printStackTrace();
-		}
+		} */
 
 	}
 
