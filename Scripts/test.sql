@@ -45,4 +45,3 @@ insert into board(BOARD_NUM, BOARD_NAME, BOARD_PASS, BOARD_SUBJECT, BOARD_CONTEN
 select * from board where BOARD_RE_REF = 19; -- 답변글일때는 board_num 이 아니라 board_re_ref로 검색 들어가야됨
 
 select * from board;
-
